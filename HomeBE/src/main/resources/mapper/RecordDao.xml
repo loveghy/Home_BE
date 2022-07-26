@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.homebe.dao.RecordDao">
+
+    <resultMap type="com.homebe.entity.Record" id="RecordMap">
+        <result property="recordId" column="record_id" jdbcType="VARCHAR"/>
+        <result property="houseId" column="house_id" jdbcType="VARCHAR"/>
+        <result property="recordState" column="record_state" jdbcType="VARCHAR"/>
+        <result property="recordPay" column="record_pay" jdbcType="NUMERIC"/>
+        <result property="recordStart" column="record_start" jdbcType="TIMESTAMP"/>
+        <result property="recordEnd" column="record_end" jdbcType="TIMESTAMP"/>
+        <result property="recordContact" column="record_contact" jdbcType="VARCHAR"/>
+        <result property="deposit" column="deposit" jdbcType="NUMERIC"/>
+        <result property="agencyFee" column="agency_fee" jdbcType="NUMERIC"/>
+        <result property="staffId" column="staff_id" jdbcType="VARCHAR"/>
+        <result property="recordType" column="record_type" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="RecordMap">
+        select record_id,
+               house_id,
+               record_state,
+               record_pay,
+               record_start,
+               record_end,
+               record_contact,
+               deposit,
+               agency_fee,
+               staff_id,
+               record_type
+        from record
+        where record_id = #{recordId}
+    </select>
+
+    <!--查询所有-->
+    <select id="queryAll" resultMap="RecordMap">
+        select record_id,
+               house_id,
+               record_state,
+               record_pay,
+               record_start,
+               record_end,
+               record_contact,
+               deposit,
+               agency_fee,
+               staff_id,
+               record_type
+        from record
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="RecordMap">
+        select
+        record_id, house_id, record_state, record_pay, record_start, record_end, record_contact, deposit, agency_fee,
+        staff_id, record_type
+        from record
+        <where>
+            <if test="recordId != null and recordId != ''">
+                and record_id = #{recordId}
+            </if>
+            <if test="houseId != null and houseId != ''">
+                and house_id = #{houseId}
+            </if>
+            <if test="recordState != null and recordState != ''">
+                and record_state = #{recordState}
+            </if>
+            <if test="recordPay != null">
+                and record_pay = #{recordPay}
+            </if>
+            <if test="recordStart != null">
+                and record_start = #{recordStart}
+            </if>
+            <if test="recordEnd != null">
+                and record_end = #{recordEnd}
+            </if>
+            <if test="recordContact != null and recordContact != ''">
+                and record_contact = #{recordContact}
+            </if>
+            <if test="deposit != null">
+                and deposit = #{deposit}
+            </if>
+            <if test="agencyFee != null">
+                and agency_fee = #{agencyFee}
+            </if>
+            <if test="staffId != null and staffId != ''">
+                and staff_id = #{staffId}
+            </if>
+            <if test="recordType != null and recordType != ''">
+                and record_type = #{recordType}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from record
+        <where>
+            <if test="recordId != null and recordId != ''">
+                and record_id = #{recordId}
+            </if>
+            <if test="houseId != null and houseId != ''">
+                and house_id = #{houseId}
+            </if>
+            <if test="recordState != null and recordState != ''">
+                and record_state = #{recordState}
+            </if>
+            <if test="recordPay != null">
+                and record_pay = #{recordPay}
+            </if>
+            <if test="recordStart != null">
+                and record_start = #{recordStart}
+            </if>
+            <if test="recordEnd != null">
+                and record_end = #{recordEnd}
+            </if>
+            <if test="recordContact != null and recordContact != ''">
+                and record_contact = #{recordContact}
+            </if>
+            <if test="deposit != null">
+                and deposit = #{deposit}
+            </if>
+            <if test="agencyFee != null">
+                and agency_fee = #{agencyFee}
+            </if>
+            <if test="staffId != null and staffId != ''">
+                and staff_id = #{staffId}
+            </if>
+            <if test="recordType != null and recordType != ''">
+                and record_type = #{recordType}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="recordId" useGeneratedKeys="true">
+        insert into record(record_id, house_id, record_state, record_pay, record_start, record_end, record_contact, deposit,
+                           agency_fee, staff_id, record_type)
+        values (#{recordId}, #{houseId}, #{recordState}, #{recordPay}, #{recordStart}, #{recordEnd}, #{recordContact}, #{deposit},
+                #{agencyFee}, #{staffId}, #{recordType})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="recordId" useGeneratedKeys="true">
+        insert into record(house_id, record_state, record_pay, record_start, record_end, record_contact, deposit,
+        agency_fee, staff_id, record_type)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.houseId}, #{entity.recordState}, #{entity.recordPay}, #{entity.recordStart}, #{entity.recordEnd},
+            #{entity.recordContact}, #{entity.deposit}, #{entity.agencyFee}, #{entity.staffId}, #{entity.recordType})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="recordId" useGeneratedKeys="true">
+        insert into record(house_id, record_state, record_pay, record_start, record_end, record_contact, deposit,
+        agency_fee, staff_id, record_type)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.houseId}, #{entity.recordState}, #{entity.recordPay}, #{entity.recordStart}, #{entity.recordEnd},
+            #{entity.recordContact}, #{entity.deposit}, #{entity.agencyFee}, #{entity.staffId}, #{entity.recordType})
+        </foreach>
+        on duplicate key update
+        house_id = values(house_id),
+        record_state = values(record_state),
+        record_pay = values(record_pay),
+        record_start = values(record_start),
+        record_end = values(record_end),
+        record_contact = values(record_contact),
+        deposit = values(deposit),
+        agency_fee = values(agency_fee),
+        staff_id = values(staff_id),
+        record_type = values(record_type)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update record
+        <set>
+            <if test="houseId != null and houseId != ''">
+                house_id = #{houseId},
+            </if>
+            <if test="recordState != null and recordState != ''">
+                record_state = #{recordState},
+            </if>
+            <if test="recordPay != null">
+                record_pay = #{recordPay},
+            </if>
+            <if test="recordStart != null">
+                record_start = #{recordStart},
+            </if>
+            <if test="recordEnd != null">
+                record_end = #{recordEnd},
+            </if>
+            <if test="recordContact != null and recordContact != ''">
+                record_contact = #{recordContact},
+            </if>
+            <if test="deposit != null">
+                deposit = #{deposit},
+            </if>
+            <if test="agencyFee != null">
+                agency_fee = #{agencyFee},
+            </if>
+            <if test="staffId != null and staffId != ''">
+                staff_id = #{staffId},
+            </if>
+            <if test="recordType != null and recordType != ''">
+                record_type = #{recordType},
+            </if>
+        </set>
+        where record_id = #{recordId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from record
+        where record_id = #{recordId}
+    </delete>
+
+</mapper>
+

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.homebe.dao.HouserDao">
+
+    <resultMap type="com.homebe.entity.Houser" id="HouserMap">
+        <result property="houserId" column="houser_id" jdbcType="VARCHAR"/>
+        <result property="houserName" column="houser_name" jdbcType="VARCHAR"/>
+        <result property="houserSex" column="houser_sex" jdbcType="VARCHAR"/>
+        <result property="houserPhone" column="houser_phone" jdbcType="VARCHAR"/>
+        <result property="houserWages" column="houser_wages" jdbcType="VARCHAR"/>
+        <result property="houserRemarks" column="houser_remarks" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="HouserMap">
+        select houser_id,
+               houser_name,
+               houser_sex,
+               houser_phone,
+               houser_wages,
+               houser_remarks
+        from houser
+        where houser_id = #{houserId}
+    </select>
+
+    <!--查询所有-->
+    <select id="queryAll" resultMap="HouserMap">
+        select houser_id,
+               houser_name,
+               houser_sex,
+               houser_phone,
+               houser_wages,
+               houser_remarks
+        from houser
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="HouserMap">
+        select
+        houser_id, houser_name, houser_sex, houser_phone, houser_wages, houser_remarks
+        from houser
+        <where>
+            <if test="houserId != null and houserId != ''">
+                and houser_id = #{houserId}
+            </if>
+            <if test="houserName != null and houserName != ''">
+                and houser_name = #{houserName}
+            </if>
+            <if test="houserSex != null and houserSex != ''">
+                and houser_sex = #{houserSex}
+            </if>
+            <if test="houserPhone != null and houserPhone != ''">
+                and houser_phone = #{houserPhone}
+            </if>
+            <if test="houserWages != null and houserWages != ''">
+                and houser_wages = #{houserWages}
+            </if>
+            <if test="houserRemarks != null and houserRemarks != ''">
+                and houser_remarks = #{houserRemarks}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from houser
+        <where>
+            <if test="houserId != null and houserId != ''">
+                and houser_id = #{houserId}
+            </if>
+            <if test="houserName != null and houserName != ''">
+                and houser_name = #{houserName}
+            </if>
+            <if test="houserSex != null and houserSex != ''">
+                and houser_sex = #{houserSex}
+            </if>
+            <if test="houserPhone != null and houserPhone != ''">
+                and houser_phone = #{houserPhone}
+            </if>
+            <if test="houserWages != null and houserWages != ''">
+                and houser_wages = #{houserWages}
+            </if>
+            <if test="houserRemarks != null and houserRemarks != ''">
+                and houser_remarks = #{houserRemarks}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="houserId" useGeneratedKeys="true">
+        insert into houser(houser_id, houser_name, houser_sex, houser_phone, houser_wages, houser_remarks)
+        values (#{houserId}, #{houserName}, #{houserSex}, #{houserPhone}, #{houserWages}, #{houserRemarks})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="houserId" useGeneratedKeys="true">
+        insert into houser(houser_name, houser_sex, houser_phone, houser_wages, houser_remarks)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.houserName}, #{entity.houserSex}, #{entity.houserPhone}, #{entity.houserWages},
+            #{entity.houserRemarks})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="houserId" useGeneratedKeys="true">
+        insert into houser(houser_name, houser_sex, houser_phone, houser_wages, houser_remarks)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.houserName}, #{entity.houserSex}, #{entity.houserPhone}, #{entity.houserWages},
+            #{entity.houserRemarks})
+        </foreach>
+        on duplicate key update
+        houser_name = values(houser_name),
+        houser_sex = values(houser_sex),
+        houser_phone = values(houser_phone),
+        houser_wages = values(houser_wages),
+        houser_remarks = values(houser_remarks)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update houser
+        <set>
+            <if test="houserName != null and houserName != ''">
+                houser_name = #{houserName},
+            </if>
+            <if test="houserSex != null and houserSex != ''">
+                houser_sex = #{houserSex},
+            </if>
+            <if test="houserPhone != null and houserPhone != ''">
+                houser_phone = #{houserPhone},
+            </if>
+            <if test="houserWages != null and houserWages != ''">
+                houser_wages = #{houserWages},
+            </if>
+            <if test="houserRemarks != null and houserRemarks != ''">
+                houser_remarks = #{houserRemarks},
+            </if>
+        </set>
+        where houser_id = #{houserId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from houser
+        where houser_id = #{houserId}
+    </delete>
+
+</mapper>
+

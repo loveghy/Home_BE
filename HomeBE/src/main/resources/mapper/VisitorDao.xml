@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.homebe.dao.VisitorDao">
+
+    <resultMap type="com.homebe.entity.Visitor" id="VisitorMap">
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="sex" column="sex" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="VisitorMap">
+        select username,
+               password,
+               sex,
+               phone,
+               name
+        from visitor
+        where username = #{username}
+    </select>
+
+    <!--查询所有-->
+    <select id="queryAll" resultMap="VisitorMap">
+        select username,
+               password,
+               sex,
+               phone,
+               name
+        from visitor
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="VisitorMap">
+        select
+        username, password, sex, phone, name
+        from visitor
+        <where>
+            <if test="username != null and username != ''">
+                and username = #{username}
+            </if>
+            <if test="password != null and password != ''">
+                and password = #{password}
+            </if>
+            <if test="sex != null and sex != ''">
+                and sex = #{sex}
+            </if>
+            <if test="phone != null and phone != ''">
+                and phone = #{phone}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from visitor
+        <where>
+            <if test="username != null and username != ''">
+                and username = #{username}
+            </if>
+            <if test="password != null and password != ''">
+                and password = #{password}
+            </if>
+            <if test="sex != null and sex != ''">
+                and sex = #{sex}
+            </if>
+            <if test="phone != null and phone != ''">
+                and phone = #{phone}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="username" useGeneratedKeys="true">
+        insert into visitor(username,password, sex, phone, name)
+        values (#{username}, #{password}, #{sex}, #{phone}, #{name})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="username" useGeneratedKeys="true">
+        insert into visitor(password, sex, phone, name)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.password}, #{entity.sex}, #{entity.phone}, #{entity.name})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="username" useGeneratedKeys="true">
+        insert into visitor(password, sex, phone, name)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.password}, #{entity.sex}, #{entity.phone}, #{entity.name})
+        </foreach>
+        on duplicate key update
+        password = values(password),
+        sex = values(sex),
+        phone = values(phone),
+        name = values(name)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update visitor
+        <set>
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+            <if test="sex != null and sex != ''">
+                sex = #{sex},
+            </if>
+            <if test="phone != null and phone != ''">
+                phone = #{phone},
+            </if>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+        </set>
+        where username = #{username}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from visitor
+        where username = #{username}
+    </delete>
+
+</mapper>
+

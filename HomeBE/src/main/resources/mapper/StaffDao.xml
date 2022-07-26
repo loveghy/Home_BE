@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.homebe.dao.StaffDao">
+
+    <resultMap type="com.homebe.entity.Staff" id="StaffMap">
+        <result property="staffId" column="staff_id" jdbcType="VARCHAR"/>
+        <result property="staffName" column="staff_name" jdbcType="VARCHAR"/>
+        <result property="staffSex" column="staff_sex" jdbcType="VARCHAR"/>
+        <result property="staffPhone" column="staff_phone" jdbcType="VARCHAR"/>
+        <result property="staffWages" column="staff_wages" jdbcType="NUMERIC"/>
+        <result property="staffRemarks" column="staff_remarks" jdbcType="VARCHAR"/>
+        <result property="staffState" column="staff_state" jdbcType="VARCHAR"/>
+        <result property="staffRoles" column="staff_roles" jdbcType="VARCHAR"/>
+        <result property="staffTime" column="staff_time" jdbcType="TIMESTAMP"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="StaffMap">
+        select staff_id,
+               staff_name,
+               staff_sex,
+               staff_phone,
+               staff_wages,
+               staff_remarks,
+               staff_state,
+               staff_roles,
+               staff_time,
+               password
+        from staff
+        where staff_id = #{staffId}
+    </select>
+      <!--查询密码返回字符串-->
+    <select id="queryPassword"  resultType= "String">
+        select
+            password
+        from staff
+        where staff_id = #{staffId}
+    </select>
+    <!--查询所有-->
+    <select id="queryAll" resultMap="StaffMap">
+        select staff_id,
+               staff_name,
+               staff_sex,
+               staff_phone,
+               staff_wages,
+               staff_remarks,
+               staff_state,
+               staff_roles,
+               staff_time,
+               password
+        from staff
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="StaffMap">
+        select
+        staff_id, staff_name, staff_sex, staff_phone, staff_wages, staff_remarks, staff_state, staff_roles, staff_time,
+        password
+        from staff
+        <where>
+            <if test="staffId != null and staffId != ''">
+                and staff_id = #{staffId}
+            </if>
+            <if test="staffName != null and staffName != ''">
+                and staff_name = #{staffName}
+            </if>
+            <if test="staffSex != null and staffSex != ''">
+                and staff_sex = #{staffSex}
+            </if>
+            <if test="staffPhone != null and staffPhone != ''">
+                and staff_phone = #{staffPhone}
+            </if>
+            <if test="staffWages != null">
+                and staff_wages = #{staffWages}
+            </if>
+            <if test="staffRemarks != null and staffRemarks != ''">
+                and staff_remarks = #{staffRemarks}
+            </if>
+            <if test="staffState != null and staffState != ''">
+                and staff_state = #{staffState}
+            </if>
+            <if test="staffRoles != null and staffRoles != ''">
+                and staff_roles = #{staffRoles}
+            </if>
+            <if test="staffTime != null">
+                and staff_time = #{staffTime}
+            </if>
+            <if test="password != null and password != ''">
+                and password = #{password}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from staff
+        <where>
+            <if test="staffId != null and staffId != ''">
+                and staff_id = #{staffId}
+            </if>
+            <if test="staffName != null and staffName != ''">
+                and staff_name = #{staffName}
+            </if>
+            <if test="staffSex != null and staffSex != ''">
+                and staff_sex = #{staffSex}
+            </if>
+            <if test="staffPhone != null and staffPhone != ''">
+                and staff_phone = #{staffPhone}
+            </if>
+            <if test="staffWages != null">
+                and staff_wages = #{staffWages}
+            </if>
+            <if test="staffRemarks != null and staffRemarks != ''">
+                and staff_remarks = #{staffRemarks}
+            </if>
+            <if test="staffState != null and staffState != ''">
+                and staff_state = #{staffState}
+            </if>
+            <if test="staffRoles != null and staffRoles != ''">
+                and staff_roles = #{staffRoles}
+            </if>
+            <if test="staffTime != null">
+                and staff_time = #{staffTime}
+            </if>
+            <if test="password != null and password != ''">
+                and password = #{password}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="staffId" useGeneratedKeys="true">
+        insert into staff(staff_id,staff_name, staff_sex, staff_phone, staff_wages, staff_remarks, staff_state, staff_roles,
+                          staff_time, password)
+        values (#{staffId},#{staffName}, #{staffSex}, #{staffPhone}, #{staffWages}, #{staffRemarks}, #{staffState}, #{staffRoles},
+                #{staffTime}, #{password})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="staffId" useGeneratedKeys="true">
+        insert into staff(staff_name, staff_sex, staff_phone, staff_wages, staff_remarks, staff_state, staff_roles,
+        staff_time, password)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.staffName}, #{entity.staffSex}, #{entity.staffPhone}, #{entity.staffWages},
+            #{entity.staffRemarks}, #{entity.staffState}, #{entity.staffRoles}, #{entity.staffTime}, #{entity.password})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="staffId" useGeneratedKeys="true">
+        insert into staff(staff_name, staff_sex, staff_phone, staff_wages, staff_remarks, staff_state, staff_roles,
+        staff_time, password)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.staffName}, #{entity.staffSex}, #{entity.staffPhone}, #{entity.staffWages},
+            #{entity.staffRemarks}, #{entity.staffState}, #{entity.staffRoles}, #{entity.staffTime}, #{entity.password})
+        </foreach>
+        on duplicate key update
+        staff_name = values(staff_name),
+        staff_sex = values(staff_sex),
+        staff_phone = values(staff_phone),
+        staff_wages = values(staff_wages),
+        staff_remarks = values(staff_remarks),
+        staff_state = values(staff_state),
+        staff_roles = values(staff_roles),
+        staff_time = values(staff_time),
+        password = values(password)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update staff
+        <set>
+            <if test="staffName != null and staffName != ''">
+                staff_name = #{staffName},
+            </if>
+            <if test="staffSex != null and staffSex != ''">
+                staff_sex = #{staffSex},
+            </if>
+            <if test="staffPhone != null and staffPhone != ''">
+                staff_phone = #{staffPhone},
+            </if>
+            <if test="staffWages != null">
+                staff_wages = #{staffWages},
+            </if>
+            <if test="staffRemarks != null and staffRemarks != ''">
+                staff_remarks = #{staffRemarks},
+            </if>
+            <if test="staffState != null and staffState != ''">
+                staff_state = #{staffState},
+            </if>
+            <if test="staffRoles != null and staffRoles != ''">
+                staff_roles = #{staffRoles},
+            </if>
+            <if test="staffTime != null">
+                staff_time = #{staffTime},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+        </set>
+        where staff_id = #{staffId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from staff
+        where staff_id = #{staffId}
+    </delete>
+
+</mapper>
+

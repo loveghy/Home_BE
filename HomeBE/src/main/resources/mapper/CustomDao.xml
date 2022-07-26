@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.homebe.dao.CustomDao">
+
+    <resultMap type="com.homebe.entity.Custom" id="CustomMap">
+        <result property="customId" column="custom_id" jdbcType="VARCHAR"/>
+        <result property="customName" column="custom_name" jdbcType="VARCHAR"/>
+        <result property="customSex" column="custom_sex" jdbcType="VARCHAR"/>
+        <result property="customPhone" column="custom_phone" jdbcType="VARCHAR"/>
+        <result property="customRemarks" column="custom_remarks" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="CustomMap">
+        select custom_id,
+               custom_name,
+               custom_sex,
+               custom_phone,
+               custom_remarks
+        from custom
+        where custom_id = #{customId}
+    </select>
+
+    <!--查询所有-->
+    <select id="queryAll" resultMap="CustomMap">
+        select custom_id,
+               custom_name,
+               custom_sex,
+               custom_phone,
+               custom_remarks
+        from custom
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="CustomMap">
+        select
+        custom_id, custom_name, custom_sex, custom_phone, custom_remarks
+        from custom
+        <where>
+            <if test="customId != null and customId != ''">
+                and custom_id = #{customId}
+            </if>
+            <if test="customName != null and customName != ''">
+                and custom_name = #{customName}
+            </if>
+            <if test="customSex != null and customSex != ''">
+                and custom_sex = #{customSex}
+            </if>
+            <if test="customPhone != null and customPhone != ''">
+                and custom_phone = #{customPhone}
+            </if>
+            <if test="customRemarks != null and customRemarks != ''">
+                and custom_remarks = #{customRemarks}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from custom
+        <where>
+            <if test="customId != null and customId != ''">
+                and custom_id = #{customId}
+            </if>
+            <if test="customName != null and customName != ''">
+                and custom_name = #{customName}
+            </if>
+            <if test="customSex != null and customSex != ''">
+                and custom_sex = #{customSex}
+            </if>
+            <if test="customPhone != null and customPhone != ''">
+                and custom_phone = #{customPhone}
+            </if>
+            <if test="customRemarks != null and customRemarks != ''">
+                and custom_remarks = #{customRemarks}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="customId" useGeneratedKeys="true">
+        insert into custom(custom_id, custom_name, custom_sex, custom_phone, custom_remarks)
+        values (#{customId}, #{customName}, #{customSex}, #{customPhone}, #{customRemarks})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="customId" useGeneratedKeys="true">
+        insert into custom(custom_name, custom_sex, custom_phone, custom_remarks)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.customName}, #{entity.customSex}, #{entity.customPhone}, #{entity.customRemarks})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="customId" useGeneratedKeys="true">
+        insert into custom(custom_name, custom_sex, custom_phone, custom_remarks)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.customName}, #{entity.customSex}, #{entity.customPhone}, #{entity.customRemarks})
+        </foreach>
+        on duplicate key update
+        custom_name = values(custom_name),
+        custom_sex = values(custom_sex),
+        custom_phone = values(custom_phone),
+        custom_remarks = values(custom_remarks)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update custom
+        <set>
+            <if test="customName != null and customName != ''">
+                custom_name = #{customName},
+            </if>
+            <if test="customSex != null and customSex != ''">
+                custom_sex = #{customSex},
+            </if>
+            <if test="customPhone != null and customPhone != ''">
+                custom_phone = #{customPhone},
+            </if>
+            <if test="customRemarks != null and customRemarks != ''">
+                custom_remarks = #{customRemarks},
+            </if>
+        </set>
+        where custom_id = #{customId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from custom
+        where custom_id = #{customId}
+    </delete>
+
+</mapper>
+
